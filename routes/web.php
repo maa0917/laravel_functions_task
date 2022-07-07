@@ -8,4 +8,4 @@ Route::get('/', function () {
 });
 
 Route::resource('users', UserController::class)
-    ->only('create', 'store');
+    ->only('create', 'store', 'show');

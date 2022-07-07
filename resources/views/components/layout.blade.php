@@ -12,10 +12,21 @@
 </head>
 <body>
 
-<a href="{{ route('users.create') }}">Sign up</a>
-<a href="">Login</a>
+<p id="notice">
+    {{session('notice')}}
+</p>
 
-<h1>{{ $title ?? '' }}</h1>
+@if (auth()->check())
+    <a href="{{ route('users.show', auth()->user()) }}">Profile</a>
+    <a href="">Logout</a>
+@else
+    <a href="{{ route('users.create') }}">Sign up</a>
+    <a href="">Login</a>
+@endif
+
+@if ($title->isNotEmpty())
+    <h1>{{ $title ?? '' }}</h1>
+@endif
 
 {{ $slot }}
 
