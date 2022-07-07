@@ -2,8 +2,10 @@
 
 namespace Tests\Browser;
 
+use App\Mail\UserMailer;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Laravel\Dusk\Browser;
 use Tests\DuskTestCase;
@@ -83,6 +85,77 @@ class LoginTest extends DuskTestCase
 
             $user = User::where('email', 'user@gmail.com')->first();
             $browser->assertPathIs("/users/{$user->id}");
+        });
+    }
+
+    /**
+     * @test
+     * @throws Throwable
+     */
+    public function アカウント登録した際、そのユーザにメールを送信すること()
+    {
+        $this->browse(function (Browser $browser) {
+            Mail::fake();
+            Mail::assertNothingSent();
+
+            $this->post('/users', [
+                'name' => 'sample',
+                'email' => 'user@gmail.com',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+            ]);
+
+            Mail::assertQueued(UserMailer::class, function ($mail) {
+                $mail->build();
+
+                return $mail->hasTo('user@gmail.com');
+            });
+        });
+    }
+
+    /**
+     * @test
+     * @throws Throwable
+     */
+    public function 要件で指定したメール文章が送信されていること()
+    {
+        $this->browse(function (Browser $browser) {
+            Mail::fake();
+            Mail::assertNothingSent();
+
+            $this->post('/users', [
+                'name' => 'sample',
+                'email' => 'user@gmail.com',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+            ]);
+
+            Mail::assertQueued(UserMailer::class, function ($mail) {
+                $mail->build();
+
+                return $mail->subject === '登録完了';
+            });
+        });
+    }
+
+    /**
+     * @test
+     * @throws Throwable
+     */
+    public function Jobを実装し、非同期でメールを送信すること()
+    {
+        $this->browse(function (Browser $browser) {
+            Mail::fake();
+            Mail::assertNothingSent();
+
+            $this->post('/users', [
+                'name' => 'sample',
+                'email' => 'user@gmail.com',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+            ]);
+
+            Mail::assertQueued(UserMailer::class);
         });
     }
 }
