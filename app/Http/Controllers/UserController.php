@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\UserStoreRequest;
+use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
@@ -21,10 +21,10 @@ class UserController extends Controller
     }
 
     /**
-     * @param UserStoreRequest $request
+     * @param StoreUserRequest $request
      * @return RedirectResponse
      */
-    public function store(UserStoreRequest $request): RedirectResponse
+    public function store(StoreUserRequest $request): RedirectResponse
     {
         $user = User::create([
             'name' => $request->name,
