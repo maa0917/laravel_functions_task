@@ -57,7 +57,15 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        if ($this->gate->allows('user-access', $user->id)) {
+        // Gateを使った認可
+        // if ($this->gate->allows('user-access', $user->id)) {
+        //     return view('users.show', compact('user'));
+        // } else {
+        //     return redirect()->route('users.show', auth()->user());
+        // }
+
+        // Policyを使った認可
+        if (auth()->user()->can('view', $user)) {
             return view('users.show', compact('user'));
         } else {
             return redirect()->route('users.show', auth()->user());
