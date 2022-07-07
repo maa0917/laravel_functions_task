@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
+use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Contracts\View\Factory;
 use Illuminate\Contracts\View\View;
@@ -12,6 +13,19 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    /**
+     * @var Gate
+     */
+    private $gate;
+
+    /**
+     * @param Gate $gate
+     */
+    public function __construct(Gate $gate)
+    {
+        $this->gate = $gate;
+    }
+
     /**
      * @return Application|Factory|View
      */
@@ -39,10 +53,14 @@ class UserController extends Controller
 
     /**
      * @param User $user
-     * @return Application|Factory|View
+     * @return Application|Factory|View|RedirectResponse
      */
     public function show(User $user)
     {
-        return view('users.show', compact('user'));
+        if ($this->gate->allows('user-access', $user->id)) {
+            return view('users.show', compact('user'));
+        } else {
+            return redirect()->route('users.show', auth()->user());
+        }
     }
 }
