@@ -37,7 +37,7 @@
         </div>
 
         <div class="actions">
-            <input type="submit" value="Create my account">
+            <input type="submit" value="Create my account" id="submit">
         </div>
     </form>
 
