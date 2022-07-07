@@ -13,15 +13,20 @@
 <body>
 
 <p id="notice">
-    {{session('notice')}}
+    {{ session('notice') }}
 </p>
 
 @if (auth()->check())
     <a href="{{ route('users.show', auth()->user()) }}">Profile</a>
-    <a href="">Logout</a>
+    <form action="{{ route('sessions.destroy', auth()->user()) }}" method="post" name="session_delete" style="display: inline">
+        @csrf
+        @method('delete')
+
+        <a href="javascript:session_delete.submit()">Logout</a>
+    </form>
 @else
     <a href="{{ route('users.create') }}">Sign up</a>
-    <a href="">Login</a>
+    <a href="{{ route('sessions.create') }}">Login</a>
 @endif
 
 @if ($title->isNotEmpty())
